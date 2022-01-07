@@ -4,7 +4,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	//"fmt"
 	"regexp"
 
 	"github.com/chrislusf/seaweedfs/weed/glog"
@@ -57,19 +56,19 @@ func (scanner *VolumeFileScanner4Fix) VisitNeedle(n *needle.Needle, offset int64
 
 func runFix(cmd *Command, args []string) bool {
 	//args := []string{"/path/to/data_1.dat", "/1.dat", "/path/to/2.dat", "./collection_24.dat", "./path/to/42.dat"}
-	re := regexp.MustCompile(`^(?P<path>\.?/(?:.+/)*)(?P<filename>(?:(?P<collection>.+?)_)?(?P<volumeId>[\d]+))\.(?P<extension>.+)$`)
+	re := regexp.MustCompile(`^(?P<path>\.?/(?:.+/)*)?(?P<filename>(?:(?P<collection>.+?)_)?(?P<volumeId>[\d]+))\.(?P<extension>.+)$`)
 	for _, arg := range args {
 		
 		if _, err := os.Stat(arg); os.IsNotExist(err) {
-			glog.V(2).Infof("skipping nonextant file: %s", arg)
+			glog.V(0).Infof("skipping nonextant file: %s", arg)
 			continue;
 		}
 
 		m := re.FindStringSubmatch(arg)
 
-		//fmt.Printf("Argument: \"%s\"\n", arg)
-		//fmt.Printf("Subexpressions/Captured groups: %#v\n", re.SubexpNames())
-		//fmt.Printf("Resulting Match: %#v\n", m)
+		glog.V(4).Infof("weed fix argument: \"%s\"\n", arg)
+		glog.V(4).Infof("subexpressions/captured groups: %#v\n", re.SubexpNames())
+		glog.V(4).Infof("resulting Match: %#v\n", m)
 
 		if m[4] == "" {
 			glog.V(2).Infof("volumeId did parse as empty instead of a sequence of digits, unexpected file naming and/or parsing issue")
@@ -86,10 +85,7 @@ func runFix(cmd *Command, args []string) bool {
 			glog.V(2).Infof("extension did not parse as dat: %s , skipping %s", fixExtension, arg)
 			continue;
 		}
-		if fixVolumePath == "" {
-			glog.V(2).Infof("volume path did parse empty, please use a path")
-			continue;
-		}
+
 		if fixFilename == "" {
 			glog.V(2).Infof("filename did parse as empty, unexpected file naming and/or parsing issue")
 			continue;
