@@ -56,8 +56,7 @@ func (scanner *VolumeFileScanner4Fix) VisitNeedle(n *needle.Needle, offset int64
 
 func runFix(cmd *Command, args []string) bool {
 	re := regexp.MustCompile(`^(?P<path>\.?/(?:.+/)*)?(?P<filename>(?:(?P<collection>.+?)_)?(?P<volumeId>[\d]+))\.(?P<extension>.+)$`)
-	for _, arg := range args {
-		
+	for _, arg := range args {		
 		if _, err := os.Stat(arg); os.IsNotExist(err) {
 			glog.V(0).Infof("skipping nonextant file: %s", arg)
 			continue;
@@ -70,7 +69,7 @@ func runFix(cmd *Command, args []string) bool {
 		glog.V(4).Infof("resulting Match: %#v\n", m)
 
 		if m[4] == "" {
-			glog.V(2).Infof("volumeId did parse as empty instead of a sequence of digits, unexpected file naming and/or parsing issue")
+			glog.V(0).Infof("volumeId did parse as empty instead of a sequence of digits, unexpected file naming and/or parsing issue, skipping")
 			continue;
 		}
 
@@ -81,12 +80,12 @@ func runFix(cmd *Command, args []string) bool {
 		fixExtension := m[5]
 
 		if fixExtension != "dat" {
-			glog.V(2).Infof("extension did not parse as dat: %s , skipping %s", fixExtension, arg)
+			glog.V(0).Infof("extension did not parse as dat: %s , skipping %s", fixExtension, arg)
 			continue;
 		}
 
 		if fixFilename == "" {
-			glog.V(2).Infof("filename did parse as empty, unexpected file naming and/or parsing issue")
+			glog.V(0).Infof("filename did parse as empty, unexpected file naming and/or parsing issue, skipping")
 			continue;
 		}
 
