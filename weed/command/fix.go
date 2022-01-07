@@ -55,7 +55,6 @@ func (scanner *VolumeFileScanner4Fix) VisitNeedle(n *needle.Needle, offset int64
 }
 
 func runFix(cmd *Command, args []string) bool {
-	//args := []string{"/path/to/data_1.dat", "/1.dat", "/path/to/2.dat", "./collection_24.dat", "./path/to/42.dat"}
 	re := regexp.MustCompile(`^(?P<path>\.?/(?:.+/)*)?(?P<filename>(?:(?P<collection>.+?)_)?(?P<volumeId>[\d]+))\.(?P<extension>.+)$`)
 	for _, arg := range args {
 		
